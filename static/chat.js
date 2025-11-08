@@ -62,6 +62,12 @@ async function sendMessage(msg) {
 
     const assistantText = data.assistant || (data.raw_response ? JSON.stringify(data.raw_response) : '')
     append('assistant', assistantText)
+    // refresh history sidebar and select the most recent conversation
+    try{
+      await loadHistory(false)
+      // select last conversation if available
+      if (conversations && conversations.length) selectConversation(conversations.length - 1)
+    }catch(e){ console.warn('Failed to refresh history after send', e) }
   } catch (err) {
     append('assistant', 'Network error: ' + err.message)
   } finally {
@@ -76,7 +82,8 @@ input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey)
 // welcome message
 
 // Load history from server
-async function loadHistory(){
+// selectDefault: if true, automatically selects the first conversation (used on initial load)
+async function loadHistory(selectDefault = true){
   try{
     const r = await fetch('/api/history')
     if (!r.ok) return
@@ -97,7 +104,9 @@ async function loadHistory(){
 
     renderConversations(convs)
     if (convs && convs.length > 0) {
-      selectConversation(0)
+      if (selectDefault) {
+        selectConversation(0)
+      }
       setStatus(`Loaded ${h.length} messages across ${convs.length} conversations`)
     } else {
       setStatus('No conversations found')
@@ -119,6 +128,8 @@ if (clearBtn) clearBtn.addEventListener('click', async () => {
       // remove rendered messages
       chatEl.innerHTML = ''
       append('assistant', "History cleared.")
+      // refresh sidebar
+      await loadHistory()
     } else {
       append('assistant', 'Failed to clear history')
     }

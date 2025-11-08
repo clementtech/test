@@ -9,6 +9,10 @@ MODEL = os.environ.get("OLLAMA_MODEL", "gemma3:1b")
 
 app = Flask(__name__, static_folder="static", static_url_path="/static")
 
+# Configurable limits and admin token
+app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024  # 2 MB limit for requests
+ADMIN_TOKEN = os.environ.get('ADMIN_TOKEN')
+
 # Simple in-memory chat history with JSON persistence
 HISTORY_FILE = os.path.join(os.path.dirname(__file__), 'chat_history.json')
 chat_history = []
@@ -42,12 +46,21 @@ def index():
 
 @app.route('/api/history', methods=['GET'])
 def get_history():
+    # If ADMIN_TOKEN is set, require X-ADMIN-TOKEN header to access history
+    if ADMIN_TOKEN:
+        token = request.headers.get('X-ADMIN-TOKEN')
+        if not token or token != ADMIN_TOKEN:
+            return jsonify({'error': 'unauthorized'}), 401
     return jsonify({'history': chat_history})
 
 
 @app.route('/api/clear-history', methods=['POST'])
 def clear_history():
     global chat_history
+    if ADMIN_TOKEN:
+        token = request.headers.get('X-ADMIN-TOKEN')
+        if not token or token != ADMIN_TOKEN:
+            return jsonify({'error': 'unauthorized'}), 401
     chat_history = []
     save_history()
     return jsonify({'ok': True})
@@ -66,6 +79,11 @@ def save_conversation():
     data = request.get_json() or {}
     conv = data.get('conversation')
     filename = data.get('filename')
+    if ADMIN_TOKEN:
+        token = request.headers.get('X-ADMIN-TOKEN')
+        if not token or token != ADMIN_TOKEN:
+            return jsonify({'error': 'unauthorized'}), 401
+
     if not conv or not isinstance(conv, list):
         return jsonify({'error': 'invalid_conversation'}), 400
 
@@ -97,7 +115,14 @@ def save_conversation():
 
 @app.route('/exports/<path:filename>', methods=['GET'])
 def serve_export(filename):
-    # serve a file from exports directory
+    # serve a file from exports directory; protect with ADMIN_TOKEN if set
+    if ADMIN_TOKEN:
+        token = request.headers.get('X-ADMIN-TOKEN')
+        if not token or token != ADMIN_TOKEN:
+            return jsonify({'error': 'unauthorized'}), 401
+    # ensure filename is safe (no path traversal)
+    if '..' in filename or filename.startswith('/'):
+        return jsonify({'error': 'invalid_filename'}), 400
     return send_from_directory(EXPORTS_DIR, filename, as_attachment=True)
 
 @app.route("/api/chat", methods=["POST"])
