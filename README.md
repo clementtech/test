@@ -39,3 +39,7 @@ Notes
 - HTTPS: when deploying, run behind HTTPS (nginx/Cloud provider) so traffic is encrypted.
 
 - Content-Security-Policy and other secure headers should be added in production (Talisman or custom headers in Flask).
+
+## AI-generated content
+
+This app proxies to a local model. Model outputs (including any references, citations, or URLs) may be incorrect or fabricated. Do not publish or rely on AI-provided citations without independently verifying the sources. When using generated references in notes or publications, provide your own validated references.
