@@ -51,6 +51,10 @@ async function sendMessage(msg) {
     if (step) instr += ` Provide step-by-step solutions.`
     messages.push({ role: 'system', content: instr })
   }
+  // if a file was attached and contains text, include it as a prior message
+  if (attachedFile && attachedFile.text) {
+    messages.push({ role: 'user', content: `Attached file (${attachedFile.filename}):\n${attachedFile.text}` })
+  }
   messages.push({ role: 'user', content: text })
 
   const payload = { messages }
@@ -73,6 +77,12 @@ async function sendMessage(msg) {
 
     const assistantText = data.assistant || (data.raw_response ? JSON.stringify(data.raw_response) : '')
     append('assistant', assistantText)
+    // clear attachment after successful send
+    if (attachedFile) {
+      attachedFile = null
+      attachedEl.textContent = ''
+      fileInput.value = ''
+    }
   } catch (err) {
     append('assistant', 'Network error: ' + err.message)
   } finally {
@@ -188,6 +198,29 @@ function getCurrentConversation(){
   })
   return items
 }
+
+// File upload handling
+const fileInput = document.getElementById('fileInput')
+const uploadBtn = document.getElementById('uploadBtn')
+const attachedEl = document.getElementById('attachedFile')
+let attachedFile = null
+
+if (uploadBtn && fileInput) uploadBtn.addEventListener('click', async () => {
+  const file = fileInput.files[0]
+  if (!file) return alert('Select a file first')
+  const form = new FormData()
+  form.append('file', file)
+  try{
+    const r = await fetch('/api/upload', { method: 'POST', body: form })
+    const data = await r.json()
+    if (r.ok && data.filename){
+      attachedFile = data
+      attachedEl.textContent = `Attached: ${data.filename}`
+    } else {
+      alert('Upload failed')
+    }
+  }catch(e){ alert('Upload failed: ' + e.message) }
+})
 
 // Download current conversation as .txt
 const downloadBtn = document.getElementById('downloadBtn')
