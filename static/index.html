@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Gemma Chat</title>
+    <link rel="stylesheet" href="/static/styles.css">
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="sidebar-top">
+          <button id="newChat" class="new">+ New chat</button>
+          <button id="clearHistory" class="clear">Clear history</button>
+        </div>
+        <div class="homework-controls">
+          <h3>Homework Assistant</h3>
+          <label>Subject: <input id="hw-subject" type="text" placeholder="Math, Physics..." /></label>
+          <label>Difficulty:
+            <select id="hw-difficulty">
+              <option value="easy">Easy</option>
+              <option value="medium" selected>Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </label>
+          <label><input id="hw-step" type="checkbox" /> Step-by-step solution</label>
+        </div>
+        <div class="conversations" id="conversations"></div>
+        <footer class="sidebar-footer">Gemma Chat</footer>
+      </aside>
+
+      <section class="main">
+        <header class="app-header">
+          <h1 id="title">Gemma Chat</h1>
+          <div class="model-select">
+            <label for="model">Model:</label>
+            <input id="model" type="text" placeholder="gemma3:1b" />
+            <button id="downloadBtn" class="mini">Download</button>
+            <button id="saveServerBtn" class="mini">Save</button>
+          </div>
+        </header>
+
+        <main class="chat-wrap">
+          <ol id="chat" class="chat" aria-live="polite"></ol>
+          <div id="status" class="status"></div>
+        </main>
+
+        <form id="composer" class="composer" action="javascript:void(0)">
+          <input id="message" type="text" placeholder="Type a message and press Enter" autocomplete="off" />
+          <button id="send" type="submit">Send</button>
+        </form>
+      </section>
+    </div>
+
+    <script src="/static/chat.js"></script>
+  </body>
+</html>
