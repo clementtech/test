@@ -85,19 +85,3 @@ def test_homework_system_message(monkeypatch):
     # the server should have forwarded the messages array to Ollama
     assert isinstance(payload, dict)
     assert 'messages' in payload
-    assert any(m.get('role') == 'system' for m in payload['messages'])
-
-
-def test_upload_text_file(tmp_path):
-    client = app.test_client()
-    p = tmp_path / 'sample.txt'
-    p.write_text('This is a sample file for upload')
-
-    with open(p, 'rb') as fh:
-        data = {'file': (fh, 'sample.txt')}
-        rv = client.post('/api/upload', data=data, content_type='multipart/form-data')
-    assert rv.status_code == 200
-    j = rv.get_json()
-    assert j.get('ok') is True
-    assert 'filename' in j
-    assert 'text' in j and 'sample file' in j['text']

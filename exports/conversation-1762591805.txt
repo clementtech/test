@@ -1,0 +1,12 @@
+Assistant: New chat — I'm Gemma. Type a message.
+User: hey
+Assistant: Hey there! How’s your day going so far? 😊 
+
+Do you want to:
+
+*   **Chat about something?** (Tell me a topic, or just say whatever’s on your mind)
+*   **Get a little entertainment?** (I can tell you a joke, a fun fact, or a story)
+*   **Get some information?** (I can answer questions on pretty much anything)
+*   **Just want to pass the time?**
+
+Let me know!

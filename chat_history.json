@@ -1,10 +1,10 @@
 [
   {
     "role": "user",
-    "content": "Solve 2+2 step by step."
+    "content": "hey"
   },
   {
     "role": "assistant",
-    "content": "Homework answer"
+    "content": "Hey there! How’s your day going so far? 😊 \n\nDo you want to:\n\n*   **Chat about something?** (Tell me a topic, or just say whatever’s on your mind)\n*   **Get a little entertainment?** (I can tell you a joke, a fun fact, or a story)\n*   **Get some information?** (I can answer questions on pretty much anything)\n*   **Just want to pass the time?**\n\nLet me know!"
   }
 ]

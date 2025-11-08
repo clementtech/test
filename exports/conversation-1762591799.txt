@@ -1,0 +1,2 @@
+Assistant: New chat — I'm Gemma. Type a message.
+User: hey
